@@ -1,0 +1,45 @@
+
+name: Build Liquid Glass Test
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: macos-26
+    timeout-minutes: 30
+
+    steps:
+      - name: Scarica il repository
+        uses: actions/checkout@v4
+
+      - name: Installa XcodeGen
+        run: brew install xcodegen
+
+      - name: Genera il progetto Xcode
+        run: xcodegen generate
+
+      - name: Compila l'app per iOS Simulator
+        run: |
+          xcodebuild \
+            -project LiquidGlassTest.xcodeproj \
+            -scheme LiquidGlassTest \
+            -configuration Debug \
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+
+      - name: Salva il risultato della compilazione
+        uses: actions/upload-artifact@v4
+        with:
+          name: LiquidGlassTest-Simulator
+          path: build/Build/Products/Debug-iphonesimulator/LiquidGlassTest.app
+          if-no-files-found: error
