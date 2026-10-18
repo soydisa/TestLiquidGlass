@@ -37,7 +37,8 @@ struct ContentView: View {
     @State private var newTask = ""
     @State private var remainingSeconds = 25 * 60
     @State private var timerRunning = false
-    @State private var dragOffset: CGFloat = 0
+    @State private var dragPosition: CGFloat? = nil
+    @State private var dragDidMove = false
 
     private let clock = Timer.publish(
         every: 1,
