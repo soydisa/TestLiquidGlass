@@ -74,7 +74,7 @@ struct ContentView: View {
     var body: some View {
         ZStack(alignment: .bottom) {
             background
-                .ignoresSafeArea()
+                .ignoresSafeArea(.container, edges: .bottom)
 
             VStack(spacing: 0) {
                 header
@@ -105,7 +105,7 @@ struct ContentView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .ignoresSafeArea()
-        .statusBarHidden(true)
+        .statusBarHidden(false)
         .preferredColorScheme(.dark)
         .onReceive(clock) { _ in
             guard timerRunning else { return }
