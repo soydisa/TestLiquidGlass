@@ -37,16 +37,17 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             build
 
-      - name: Package unsigned app
+      - name: Package unsigned IPA
         run: |
-          mkdir -p output
-          cd build/Build/Products/Debug-iphoneos
-          zip -r "$GITHUB_WORKSPACE/output/LiquidGlassTest-unsigned.zip" LiquidGlassTest.app
+          mkdir -p output/Payload
+          cp -R build/Build/Products/Debug-iphoneos/LiquidGlassTest.app output/Payload/
+          cd output
+          zip -r LiquidGlassTest-unsigned.ipa Payload
 
-      - name: Upload iPhone build
+      - name: Upload iPhone IPA
         uses: actions/upload-artifact@v4
         with:
-          name: LiquidGlassTest-iPhone-unsigned
-          path: output/LiquidGlassTest-unsigned.zip
+          name: LiquidGlassTest-unsigned-IPA
+          path: output/LiquidGlassTest-unsigned.ipa
           if-no-files-found: error
           retention-days: 7
