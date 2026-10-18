@@ -1,5 +1,5 @@
 
-name: Build Liquid Glass Test
+name: Build Liquid Glass for iPhone
 
 on:
   workflow_dispatch:
@@ -16,30 +16,37 @@ jobs:
     timeout-minutes: 30
 
     steps:
-      - name: Scarica il repository
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Installa XcodeGen
+      - name: Install XcodeGen
         run: brew install xcodegen
 
-      - name: Genera il progetto Xcode
+      - name: Generate Xcode project
         run: xcodegen generate
 
-      - name: Compila l'app per iOS Simulator
+      - name: Build for physical iPhone
         run: |
           xcodebuild \
             -project LiquidGlassTest.xcodeproj \
             -scheme LiquidGlassTest \
             -configuration Debug \
-            -sdk iphonesimulator \
-            -destination 'generic/platform=iOS Simulator' \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
             -derivedDataPath build \
             CODE_SIGNING_ALLOWED=NO \
             build
 
-      - name: Salva il risultato della compilazione
+      - name: Package unsigned app
+        run: |
+          mkdir -p output
+          cd build/Build/Products/Debug-iphoneos
+          zip -r "$GITHUB_WORKSPACE/output/LiquidGlassTest-unsigned.zip" LiquidGlassTest.app
+
+      - name: Upload iPhone build
         uses: actions/upload-artifact@v4
         with:
-          name: LiquidGlassTest-Simulator
-          path: build/Build/Products/Debug-iphonesimulator/LiquidGlassTest.app
+          name: LiquidGlassTest-iPhone-unsigned
+          path: output/LiquidGlassTest-unsigned.zip
           if-no-files-found: error
+          retention-days: 7
